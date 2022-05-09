@@ -1,3 +1,5 @@
+add_definitions(-DTHRUST_IGNORE_CUB_VERSION_CHECK)
+
 configure_file("${PROJECT_SOURCE_DIR}/src/cupoch/cupoch_config.h.in"
                "${PROJECT_SOURCE_DIR}/src/cupoch/cupoch_config.h")
 
