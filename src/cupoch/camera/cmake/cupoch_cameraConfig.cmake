@@ -1,6 +1,6 @@
 include(CMakeFindDependencyMacro)
 find_package(Eigen3 3.3.7 CONFIG REQUIRED)
-if(NOT ${jsoncpp_FOUND})
+if(NOT TARGET JsonCpp::JsonCpp)
 	find_package(jsoncpp 1.9 CONFIG REQUIRED)
 endif()
 find_package(CUDA REQUIRED)

@@ -1,7 +1,7 @@
 include(CMakeFindDependencyMacro)
 find_package(Eigen3 3.3.7 CONFIG REQUIRED)
 find_package(JPEG REQUIRED)
-if(NOT ${jsoncpp_FOUND})
+if(NOT TARGET JsonCpp::JsonCpp)
 	find_package(jsoncpp CONFIG REQUIRED)
 endif()
 find_package(tinyobjloader CONFIG REQUIRED)
