@@ -1,6 +1,9 @@
 build*
+!build.bat
 *.nvp
 cupoch_config.h
 shader.h
 imgui.ini
 site/*
+CMakeCache*
+CMakeFiles/*
