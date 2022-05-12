@@ -17,7 +17,7 @@ set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --no-host-device-move-forward --expt-r
 file(GLOB_RECURSE ALL_SOURCE_FILES "*.cu" "*.cpp" "*.c")
 file(GLOB_RECURSE ALL_HEADER_FILES "*.h"  "*.inl" "*.cuh")
 
-add_library(${PROJECT_NAME} STATIC
+add_library(${PROJECT_NAME} 
     ${ALL_SOURCE_FILES}
 )
 

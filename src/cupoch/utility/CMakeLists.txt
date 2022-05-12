@@ -15,7 +15,7 @@ set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr --extended-la
 file(GLOB_RECURSE ALL_SOURCE_FILES "*.cpp" "*.cu")
 file(GLOB_RECURSE ALL_HEADER_FILES "*.h" "*.inl")
 
-add_library(${PROJECT_NAME} STATIC
+add_library(${PROJECT_NAME}
     ${ALL_SOURCE_FILES}
 )
 

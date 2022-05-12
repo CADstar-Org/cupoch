@@ -5,14 +5,14 @@ project(cupoch_odometry VERSION 0.1.3 LANGUAGES CXX CUDA)
 # Check for dependencies
 find_package(Eigen3 3.3.7 CONFIG REQUIRED)
 find_package(CUDA REQUIRED)
-
+find_package(stdgpu CONFIG REQUIRED)
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --no-host-device-move-forward --expt-relaxed-constexpr --extended-lambda")
 
 # Define the library
 file(GLOB_RECURSE ALL_SOURCE_FILES "*.cu")
 file(GLOB_RECURSE ALL_HEADER_FILES "*.h" "*.inl")
 
-add_library(${PROJECT_NAME} STATIC
+add_library(${PROJECT_NAME}
     ${ALL_SOURCE_FILES}
 )
 
@@ -33,7 +33,7 @@ target_include_directories(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC 
-        Eigen3::Eigen cupoch_utility cupoch_camera cupoch_geometry
+        Eigen3::Eigen cupoch_utility stdgpu cupoch_camera cupoch_geometry 
     )
 
 # Installation

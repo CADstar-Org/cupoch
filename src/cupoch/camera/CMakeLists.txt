@@ -6,14 +6,14 @@ project(cupoch_camera VERSION 0.1.3 LANGUAGES CXX CUDA)
 find_package(Eigen3 3.3.7 CONFIG REQUIRED)
 find_package(jsoncpp 1.9 CONFIG REQUIRED)
 find_package(CUDA REQUIRED)
-
+find_package(fmt 3.0 CONFIG REQUIRED)
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr --extended-lambda")
 
 # Define the library
 file(GLOB_RECURSE ALL_CPP_SOURCE_FILES "*.cpp")
 file(GLOB_RECURSE ALL_HEADER_FILES "*.h")
 
-add_library(${PROJECT_NAME} STATIC
+add_library(${PROJECT_NAME}
     ${ALL_CPP_SOURCE_FILES}
 )
 
@@ -35,7 +35,7 @@ target_include_directories(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC 
-        Eigen3::Eigen jsoncpp_lib
+        Eigen3::Eigen jsoncpp_lib fmt::fmt fmt::fmt-header-only cupoch_utility
     )
 
 # Installation
