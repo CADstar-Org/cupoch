@@ -35,7 +35,7 @@ target_include_directories(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC 
-        Eigen3::Eigen jsoncpp_lib
+        Eigen3::Eigen JsonCpp::JsonCpp
     )
 
 # Installation

@@ -38,7 +38,7 @@ target_include_directories(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC 
-        Eigen3::Eigen ${JPEG_LIBRARIES} jsoncpp_lib tinyobjloader::tinyobjloader rply::rply png
+        Eigen3::Eigen ${JPEG_LIBRARIES} JsonCpp::JsonCpp tinyobjloader::tinyobjloader rply::rply png
         cupoch_utility cupoch_geometry
     )
 

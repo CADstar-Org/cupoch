@@ -31,7 +31,7 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC dlpack::dlpack Eigen3::Eigen fmt::fmt fmt::fmt-header-only jsoncpp_lib)
+target_link_libraries(${PROJECT_NAME} PUBLIC dlpack::dlpack Eigen3::Eigen fmt::fmt fmt::fmt-header-only JsonCpp::JsonCpp)
 
 # Installation
 
