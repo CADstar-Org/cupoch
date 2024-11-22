@@ -19,6 +19,8 @@
  * IN THE SOFTWARE.
 **/
 #include <thrust/iterator/discard_iterator.h>
+#include <thrust/iterator/constant_iterator.h>
+#include <thrust/count.h>
 
 #include "cupoch/integration/marching_cubes_const.h"
 #include "cupoch/integration/uniform_tsdfvolume.h"

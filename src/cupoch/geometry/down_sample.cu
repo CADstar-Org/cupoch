@@ -76,6 +76,25 @@ struct compute_key_functor {
     }
 };
 
+template <class T>
+struct add_value_fun {
+    __device__ T operator()(const T &a, const T &b) const { return a + b; }
+};
+
+template <class... T>
+struct add_value_fun<thrust::tuple<T...>> : public add_tuple_functor<T...> {};
+
+template <class T>
+struct divide_value_fun {
+    __device__ T operator()(const T &a, const int &b) const {
+        return a / static_cast<float>(b);
+    }
+};
+
+template <class... T>
+struct divide_value_fun<thrust::tuple<T...>>
+    : public devide_tuple_functor<T...> {};
+
 template <typename OutputIterator, class... Args>
 __host__ int CalcAverageByKey(utility::device_vector<Eigen::Vector3i> &keys,
                               OutputIterator buf_begins,
@@ -92,12 +111,15 @@ __host__ int CalcAverageByKey(utility::device_vector<Eigen::Vector3i> &keys,
     counts.resize(n_out);
 
     thrust::equal_to<Eigen::Vector3i> binary_pred;
-    add_tuple_functor<Args...> add_func;
+
+    using T = typename OutputIterator::value_type;
+
+    add_value_fun<T> add_func;
     auto end2 = thrust::reduce_by_key(keys.begin(), keys.end(), buf_begins,
                                       thrust::make_discard_iterator(),
                                       output_begins, binary_pred, add_func);
 
-    devide_tuple_functor<Args...> dv_func;
+    divide_value_fun<T> dv_func;
     thrust::transform(output_begins, output_begins + n_out, counts.begin(),
                       output_begins, dv_func);
     return n_out;
@@ -168,9 +190,9 @@ std::shared_ptr<PointCloud> PointCloud::VoxelDownSample(
         typedef thrust::tuple<utility::device_vector<Eigen::Vector3f>::iterator>
                 IteratorTuple;
         typedef thrust::zip_iterator<IteratorTuple> ZipIterator;
-        auto n_out = CalcAverageByKey<ZipIterator, Eigen::Vector3f>(
-                keys, make_tuple_begin(sorted_points),
-                make_tuple_begin(output->points_));
+        auto n_out = CalcAverageByKey<decltype(sorted_points.begin()), Eigen::Vector3f>(
+                keys, sorted_points.begin(),
+                output->points_.begin());
         output->points_.resize(n_out);
     } else if (has_normals && !has_colors) {
         utility::device_vector<Eigen::Vector3f> sorted_normals = normals_;
@@ -287,7 +309,7 @@ PointCloud::RemoveRadiusOutliers(size_t nb_points, float search_radius, int max_
                                                                     thrust::make_counting_iterator(n_pt), NUM_MAX_NN);
     thrust::reduce_by_key(range.begin(), range.end(),
                           thrust::make_transform_iterator(tmp_indices.begin(),
-                                                          [] __device__ (int idx) { return (int)(idx >= 0); }),
+                                                          [] __device__ (int idx) -> int { return (int)(idx >= 0); }),
                           thrust::make_discard_iterator(),
                           counts.begin(), thrust::equal_to<size_t>(),
                           thrust::plus<size_t>());
@@ -329,7 +351,7 @@ PointCloud::RemoveStatisticalOutliers(size_t nb_neighbors,
                           thrust::make_discard_iterator(),
                           make_tuple_iterator(counts.begin(), avg_distances.begin()),
                           thrust::equal_to<size_t>(),
-                          [] __device__ (const thrust::tuple<size_t, float>& rhs, const thrust::tuple<size_t, float>& lhs) {
+                          [] __device__ (const thrust::tuple<size_t, float>& rhs, const thrust::tuple<size_t, float>& lhs) -> thrust::tuple<uint64_t, float>{
                               float rd = thrust::get<1>(rhs);
                               size_t rc = thrust::get<0>(rhs);
                               if (isinf(rd) || rd < 0.0) {
@@ -345,25 +367,25 @@ PointCloud::RemoveStatisticalOutliers(size_t nb_neighbors,
                               return thrust::make_tuple(rc + lc, rd + ld);
                           });
     thrust::transform(avg_distances.begin(), avg_distances.end(), counts.begin(), avg_distances.begin(),
-                      [] __device__ (float avg, size_t cnt) {
+                      [] __device__ (float avg, size_t cnt) -> float {
                           return (cnt > 0) ? avg / (float)cnt : -1.0;
                       });
     const size_t valid_distances =
             thrust::count_if(avg_distances.begin(), avg_distances.end(),
-                             [] __device__(float x) { return (x >= 0.0); });
+                             [] __device__(float x) -> float { return (x >= 0.0); });
     if (valid_distances == 0) {
         return std::make_tuple(std::make_shared<PointCloud>(),
                                utility::device_vector<size_t>());
     }
     float cloud_mean =
             thrust::reduce(avg_distances.begin(), avg_distances.end(), 0.0,
-                           [] __device__(float const &x, float const &y) {
+                           [] __device__(float const &x, float const &y) -> float {
                                return max(x, 0.0f) + max(y, 0.0f);
                            });
     cloud_mean /= valid_distances;
     const float sq_sum = thrust::transform_reduce(
             avg_distances.begin(), avg_distances.end(),
-            [cloud_mean] __device__(const float x) {
+            [cloud_mean] __device__(const float x)-> float {
                 return (x > 0) ? (x - cloud_mean) * (x - cloud_mean) : 0;
             },
             0.0, thrust::plus<float>());

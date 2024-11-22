@@ -5,7 +5,7 @@ project(cupoch_camera VERSION 0.1.3 LANGUAGES CXX CUDA)
 # Check for dependencies
 find_package(Eigen3 3.3.7 CONFIG REQUIRED)
 find_package(jsoncpp 1.9 CONFIG REQUIRED)
-find_package(CUDA REQUIRED)
+find_package(CUDAToolkit)
 
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr --extended-lambda")
 
@@ -18,9 +18,6 @@ add_library(${PROJECT_NAME} STATIC
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES 
-    CUDA_ARCHITECTURES "${SUPPORTED_ARCHITECTURE}"
-    CXX_STANDARD 14
-    CUDA_SEPARABLE_COMPILATION OFF
     DEBUG_POSTFIX "_d"
     PUBLIC_HEADER "${ALL_HEADER_FILES}"
 )
@@ -33,9 +30,13 @@ target_include_directories(${PROJECT_NAME}
         ${THRUST_INCLUDE_DIRS}
 )
 
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PUBLIC $<IF:$<COMPILE_LANGUAGE:CUDA>,-Xcompiler=/utf-8,/utf-8>)
+endif()
+
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC 
-        Eigen3::Eigen JsonCpp::JsonCpp
+        Eigen3::Eigen JsonCpp::JsonCpp CUDA::cudart_static
     )
 
 # Installation

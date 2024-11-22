@@ -21,6 +21,8 @@
 #include "cupoch/registration/permutohedral.h"
 #include "cupoch/utility/platform.h"
 
+#include <thrust/sort.h>
+
 namespace cupoch {
 namespace registration {
 

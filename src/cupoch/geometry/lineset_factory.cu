@@ -20,6 +20,8 @@
 **/
 #include <Eigen/Dense>
 
+#include <thrust/unique.h>
+
 #include "cupoch/geometry/boundingvolume.h"
 #include "cupoch/geometry/lineset.h"
 #include "cupoch/geometry/pointcloud.h"

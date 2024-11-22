@@ -23,13 +23,14 @@
 #include <thrust/host_vector.h>
 #include <thrust/iterator/zip_iterator.h>
 #include <thrust/remove.h>
-#if THRUST_VERSION >= 100905 && !defined(_WIN32)
+#if THRUST_VERSION >= 100905
 #include <thrust/type_traits/integer_sequence.h>
 #else
-namespace thrust {
-template <std::size_t N>
-using make_index_sequence = std::make_index_sequence<N>;
-}
+THRUST_NAMESPACE_BEGIN 
+    template <std::size_t N>
+    using make_index_sequence = std::make_index_sequence<N>;
+
+THRUST_NAMESPACE_END
 #endif
 
 #include <stdgpu/functional.h>
@@ -39,15 +40,13 @@ using make_index_sequence = std::make_index_sequence<N>;
 
 #include "device_vector.h"
 
-namespace thrust {
-
-template <int Dim>
-struct equal_to<Eigen::Matrix<int, Dim, 1>> {
-    typedef Eigen::Matrix<int, Dim, 1> first_argument_type;
-    typedef Eigen::Matrix<int, Dim, 1> second_argument_type;
-    typedef bool result_type;
-    // clang-format off
-    __thrust_exec_check_disable__
+THRUST_NAMESPACE_BEGIN 
+    template <int Dim>
+    struct equal_to<Eigen::Matrix<int, Dim, 1>> {
+        typedef Eigen::Matrix<int, Dim, 1> first_argument_type;
+        typedef Eigen::Matrix<int, Dim, 1> second_argument_type;
+        typedef bool result_type;
+        // clang-format off
     __host__ __device__ bool operator()(
             const Eigen::Matrix<int, Dim, 1> &lhs,
             const Eigen::Matrix<int, Dim, 1> &rhs) const {
@@ -56,24 +55,25 @@ struct equal_to<Eigen::Matrix<int, Dim, 1>> {
         }
         return true;
     }
-    // clang-format on
-};
+        // clang-format on
+    };
 
-template <typename VectorType>
-struct elementwise_minimum {
-    __device__ VectorType operator()(const VectorType &a, const VectorType &b) {
-        return a.array().min(b.array()).matrix();
-    }
-};
+    template <typename VectorType>
+    struct elementwise_minimum {
+        __device__ VectorType operator()(const VectorType &a,
+                                         const VectorType &b) {
+            return a.array().min(b.array()).matrix();
+        }
+    };
 
-template <typename VectorType>
-struct elementwise_maximum {
-    __device__ VectorType operator()(const VectorType &a, const VectorType &b) {
-        return a.array().max(b.array()).matrix();
-    }
-};
-
-}  // namespace thrust
+    template <typename VectorType>
+    struct elementwise_maximum {
+        __device__ VectorType operator()(const VectorType &a,
+                                         const VectorType &b) {
+            return a.array().max(b.array()).matrix();
+        }
+    };
+THRUST_NAMESPACE_END
 
 namespace Eigen {
 
@@ -145,7 +145,7 @@ __host__ __device__ void add_fn(T &x, const T &y) {
 template <typename T, std::size_t... Is>
 __host__ __device__ void add_tuple_impl(T &t,
                                         const T &y,
-                                        std::index_sequence<Is...>) {
+                                        cuda::std::index_sequence<Is...>) {
     std::initializer_list<int>{
             ((void)add_fn(thrust::get<Is>(t), thrust::get<Is>(y)), 0)...};
 }
@@ -159,7 +159,7 @@ struct add_tuple_functor
             const thrust::tuple<Args...> &x,
             const thrust::tuple<Args...> &y) const {
         thrust::tuple<Args...> ans = x;
-        add_tuple_impl(ans, y, thrust::make_index_sequence<sizeof...(Args)>{});
+        add_tuple_impl(ans, y, cuda::std::make_index_sequence<sizeof...(Args)>{});
         return ans;
     }
 };
@@ -172,7 +172,7 @@ __host__ __device__ void devide_fn(T &x, const int &y) {
 template <typename T, std::size_t... Is>
 __host__ __device__ void devide_tuple_impl(T &t,
                                            const int &y,
-                                           std::index_sequence<Is...>) {
+                                           cuda::std::index_sequence<Is...>) {
     std::initializer_list<int>{((void)devide_fn(thrust::get<Is>(t), y), 0)...};
 }
 
@@ -185,7 +185,7 @@ struct devide_tuple_functor
             const thrust::tuple<Args...> &x, const int &y) const {
         thrust::tuple<Args...> ans = x;
         devide_tuple_impl(ans, y,
-                          thrust::make_index_sequence<sizeof...(Args)>{});
+                          cuda::std::make_index_sequence<sizeof...(Args)>{});
         return ans;
     }
 };

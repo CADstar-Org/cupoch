@@ -28,6 +28,8 @@
 #include <rmm/mr/device/cuda_memory_resource.hpp>
 #include <rmm/mr/device/managed_memory_resource.hpp>
 #else
+#include <thrust/mr/device_memory_resource.h>
+#include <thrust/mr/allocator.h>
 #include <thrust/device_vector.h>
 enum rmmAllocationMode_t {
     CudaDefaultAllocation = 0,
@@ -36,7 +38,6 @@ enum rmmAllocationMode_t {
 };
 #endif
 #include <thrust/host_vector.h>
-#include <thrust/system/cuda/experimental/pinned_allocator.h>
 
 #if defined(_WIN32)
 struct float4_t {
@@ -60,10 +61,10 @@ inline float4_t make_float4_t(float x, float y, float z, float w) {
 
 namespace cupoch {
 namespace utility {
-
+using pinned_memory_resource = thrust::system::cuda::universal_host_pinned_memory_resource;
 template <typename T>
 using pinned_host_vector =
-        thrust::host_vector<T, thrust::cuda::experimental::pinned_allocator<T>>;
+        thrust::host_vector<T, thrust::mr::stateless_resource_allocator<T, pinned_memory_resource>>;
 
 #ifdef USE_RMM
 template <typename T>

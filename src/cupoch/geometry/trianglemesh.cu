@@ -20,7 +20,12 @@
 **/
 #include <thrust/gather.h>
 #include <thrust/iterator/discard_iterator.h>
+#include <thrust/iterator/constant_iterator.h>
 #include <thrust/random.h>
+#include <thrust/sort.h>
+#include <thrust/execution_policy.h>
+#include <thrust/unique.h>
+#include <thrust/distance.h>
 
 #include "cupoch/geometry/geometry_functor.h"
 #include "cupoch/geometry/intersection_test.h"

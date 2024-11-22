@@ -21,6 +21,9 @@
 #include <Eigen/Geometry>
 #include <thrust/iterator/discard_iterator.h>
 #include <thrust/random.h>
+#include <thrust/sequence.h>
+#include <thrust/tabulate.h>
+#include <thrust/sort.h>
 
 #include "cupoch/geometry/pointcloud.h"
 #include "cupoch/utility/platform.h"
@@ -132,7 +135,7 @@ Eigen::Vector4f GetPlaneFromPoints(const utility::device_vector<Eigen::Vector3f>
     Eigen::Vector6f mul_xyz = Eigen::Vector6f::Zero();
     mul_xyz = thrust::transform_reduce(thrust::make_permutation_iterator(points.begin(), inliers.begin()),
                                        thrust::make_permutation_iterator(points.begin(), inliers.end()),
-                                       [centroid] __device__ (const Eigen::Vector3f& pt) {
+                                       [centroid] __device__ (const Eigen::Vector3f& pt) -> Eigen::Vector6f {
                                            Eigen::Vector3f r = pt - centroid;
                                            Eigen::Vector6f ans;
                                            ans << r(0) * r(0), r(0) * r(1), r(0) * r(2), r(1) * r(1), r(1) * r(2), r(2) * r(2);

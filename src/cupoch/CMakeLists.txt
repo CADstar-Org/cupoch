@@ -10,32 +10,8 @@ SET(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 add_definitions(-DNOMINMAX)
 add_definitions(-D_USE_MATH_DEFINES)
 
-# Make a list of CUDA architectures
-option(SUPPORT_MAXWELL "Support Maxwell architectures" ON)
-option(SUPPORT_PASCAL  "Support Pascal architectures"  ON)
-option(SUPPORT_VOLTA   "Support Volta architectures"   ON)
-option(SUPPORT_TURING  "Support Turing architectures"  ON)
-option(SUPPORT_AMPERE  "Support Ampere architectures"  OFF)
-
-if(SUPPORT_MAXWELL)
-list(APPEND SUPPORTED_ARCHITECTURE 50 52 53)
-endif()
-
-if(SUPPORT_PASCAL)
-list(APPEND SUPPORTED_ARCHITECTURE 60 61 62)
-endif()
-
-if(SUPPORT_VOLTA)
-list(APPEND SUPPORTED_ARCHITECTURE 70)
-endif()
-
-if(SUPPORT_TURING)
-list(APPEND SUPPORTED_ARCHITECTURE 75)
-endif()
-
-if(SUPPORT_AMPERE)
-list(APPEND SUPPORTED_ARCHITECTURE 86)
-endif()
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CUDA_STANDARD 17)
 
 add_subdirectory(utility)
 add_subdirectory(camera)

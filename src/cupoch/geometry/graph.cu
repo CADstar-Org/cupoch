@@ -20,6 +20,9 @@
 **/
 #include <thrust/gather.h>
 #include <thrust/iterator/discard_iterator.h>
+#include <thrust/iterator/constant_iterator.h>
+#include <thrust/set_operations.h>
+#include <thrust/count.h>
 #include <stdgpu/unordered_set.cuh>
 
 #include "cupoch/geometry/geometry_functor.h"
@@ -27,6 +30,8 @@
 #include "cupoch/geometry/kdtree_flann.h"
 #include "cupoch/utility/platform.h"
 #include "cupoch/utility/console.h"
+
+#include <thrust/sort.h>
 
 namespace cupoch {
 namespace geometry {

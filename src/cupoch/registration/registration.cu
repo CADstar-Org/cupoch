@@ -72,7 +72,7 @@ RegistrationResult GetRegistrationResultAndCorrespondences(
     result.correspondence_set_.resize(n_pt);
     const float error2 = thrust::transform_reduce(
             dists.begin(), dists.end(),
-            [] __device__(float d) { return (isinf(d)) ? 0.0 : d; }, 0.0f,
+            [] __device__(float d) -> float { return (isinf(d)) ? 0.0 : d; }, 0.0f,
             thrust::plus<float>());
     thrust::transform(enumerate_begin(indices), enumerate_end(indices),
                       result.correspondence_set_.begin(),
@@ -122,7 +122,7 @@ RegistrationResult GetRegistrationResultAndCorrespondencesWithNormalRejection(
     result.correspondence_set_.resize(n_pt);
     const float error2 = thrust::transform_reduce(
             dists.begin(), dists.end(),
-            [] __device__(float d) { return (isinf(d)) ? 0.0 : d; }, 0.0f,
+            [] __device__(float d) -> float { return (isinf(d)) ? 0.0 : d; }, 0.0f,
             thrust::plus<float>());
     thrust::transform(enumerate_begin(indices), enumerate_end(indices),
                       result.correspondence_set_.begin(),

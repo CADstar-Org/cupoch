@@ -38,7 +38,7 @@ typedef Eigen::Matrix<unsigned short, 3, 1> Vector3ui16;
 
 namespace cupoch {
 namespace utility {
-
+#ifdef __CUDACC__
 template <typename VecType>
 struct jacobian_residual_functor {
     __device__ virtual void operator()(int i, VecType &vec, float &r) const = 0;
@@ -50,6 +50,7 @@ struct multiple_jacobians_residuals_functor {
                                        VecType J_r[NumJ],
                                        float r[NumJ]) const = 0;
 };
+#endif __CUDACC__
 
 /// Function to transform 6D motion vector to 4D motion matrix
 Eigen::Matrix4f TransformVector6fToMatrix4f(const Eigen::Vector6f &input);

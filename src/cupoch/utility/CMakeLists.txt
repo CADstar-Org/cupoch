@@ -7,7 +7,7 @@ find_package(dlpack CONFIG REQUIRED)
 find_package(Eigen3 3.3.7 CONFIG REQUIRED)
 find_package(fmt 3.0 CONFIG REQUIRED)
 find_package(jsoncpp 1.9 CONFIG REQUIRED)
-find_package(CUDA REQUIRED)
+find_package(CUDAToolkit)
 
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr --extended-lambda")
 
@@ -20,8 +20,6 @@ add_library(${PROJECT_NAME} STATIC
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES 
-    CUDA_ARCHITECTURES "${SUPPORTED_ARCHITECTURE}"
-    CXX_STANDARD 14
     CUDA_SEPARABLE_COMPILATION OFF
     DEBUG_POSTFIX "_d"
     PUBLIC_HEADER "${ALL_HEADER_FILES}"
@@ -31,7 +29,11 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC dlpack::dlpack Eigen3::Eigen fmt::fmt fmt::fmt-header-only JsonCpp::JsonCpp)
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PUBLIC $<IF:$<COMPILE_LANGUAGE:CUDA>,-Xcompiler=/utf-8 --ftemplate-backtrace-limit 0,/utf-8>)
+endif()
+
+target_link_libraries(${PROJECT_NAME} PUBLIC dlpack::dlpack Eigen3::Eigen fmt::fmt fmt::fmt-header-only JsonCpp::JsonCpp CUDA::cudart_static)
 
 # Installation
 

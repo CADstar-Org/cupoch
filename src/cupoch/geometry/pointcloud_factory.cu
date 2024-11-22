@@ -21,6 +21,7 @@
 #include <Eigen/Dense>
 #include <limits>
 #include <thrust/iterator/discard_iterator.h>
+#include <thrust/iterator/constant_iterator.h>
 
 #include "cupoch/camera/pinhole_camera_intrinsic.h"
 #include "cupoch/geometry/image.h"

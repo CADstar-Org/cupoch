@@ -18,7 +18,9 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
 **/
+#include <thrust/iterator/constant_iterator.h>
 #include <thrust/random.h>
+#include <thrust/sort.h>
 
 #include "cupoch/geometry/bruteforce_nn.h"
 #include "cupoch/geometry/pointcloud.h"
@@ -212,12 +214,12 @@ std::tuple<std::vector<Eigen::Vector3f>, float, float> NormalizePointCloud(
         thrust::for_each(
                 point_cloud_vec[i].points_.begin(),
                 point_cloud_vec[i].points_.end(),
-                [mean] __device__(Eigen::Vector3f & pt) { pt -= mean; });
+                [mean] __device__(Eigen::Vector3f & pt) -> Eigen::Vector3f { pt -= mean; });
 
         scale = thrust::transform_reduce(
                 point_cloud_vec[i].points_.begin(),
                 point_cloud_vec[i].points_.end(),
-                [] __device__(const Eigen::Vector3f& pt) { return pt.norm(); },
+                [] __device__(const Eigen::Vector3f& pt) -> float { return pt.norm(); },
                 scale, thrust::maximum<float>());
     }
 
@@ -233,7 +235,7 @@ std::tuple<std::vector<Eigen::Vector3f>, float, float> NormalizePointCloud(
     for (int i = 0; i < num; ++i) {
         thrust::for_each(point_cloud_vec[i].points_.begin(),
                          point_cloud_vec[i].points_.end(),
-                         [scale_global] __device__(Eigen::Vector3f & pt) {
+                         [scale_global] __device__(Eigen::Vector3f & pt) -> Eigen::Vector3f {
                              pt /= scale_global;
                          });
     }

@@ -22,6 +22,8 @@
 #include "cupoch/geometry/image.h"
 #include "cupoch/utility/console.h"
 
+#include <thrust/execution_policy.h>
+
 using namespace cupoch;
 using namespace cupoch::geometry;
 

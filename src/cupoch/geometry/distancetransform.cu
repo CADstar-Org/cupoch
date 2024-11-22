@@ -390,7 +390,7 @@ float DistanceTransform::GetDistance(const Eigen::Vector3f& query) const {
 }
 
 utility::device_vector<float> DistanceTransform::GetDistances(const utility::device_vector<Eigen::Vector3f>& queries) const {
-    auto func = [voxel_size = voxel_size_, resolution = resolution_, origin = origin_] __device__ (const Eigen::Vector3f& query) {
+    auto func = [voxel_size = voxel_size_, resolution = resolution_, origin = origin_] __device__ (const Eigen::Vector3f& query) -> int {
         Eigen::Vector3f qv = (query - origin + 0.5 * voxel_size * Eigen::Vector3f::Constant(resolution)) / voxel_size;
         Eigen::Vector3i idx = Eigen::device_vectorize<float, 3, ::floor>(qv.array()).cast<int>();
         return IndexOf(idx, resolution);
@@ -399,7 +399,7 @@ utility::device_vector<float> DistanceTransform::GetDistances(const utility::dev
     thrust::transform(thrust::make_permutation_iterator(voxels_.begin(), thrust::make_transform_iterator(queries.begin(), func)),
                       thrust::make_permutation_iterator(voxels_.begin(), thrust::make_transform_iterator(queries.end(), func)),
                       dists.begin(),
-                      [] __device__ (const DistanceVoxel& v) { return v.distance_; });
+                      [] __device__ (const DistanceVoxel& v) -> float { return v.distance_; });
     return dists;
 }
 

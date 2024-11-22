@@ -131,7 +131,7 @@ float TransformationEstimationPointToPlane::ComputeRMSE(
                                     corres.end(),
                                     extract_element_functor<int, 2, 1>()))),
             [] __device__(const thrust::tuple<Eigen::Vector3f, Eigen::Vector3f,
-                                              Eigen::Vector3f> &x) {
+                                              Eigen::Vector3f> &x) -> float {
                 float r = (thrust::get<0>(x) - thrust::get<1>(x))
                                   .dot(thrust::get<2>(x));
                 return r * r;

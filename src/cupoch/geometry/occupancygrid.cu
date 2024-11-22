@@ -19,6 +19,9 @@
  * IN THE SOFTWARE.
 **/
 #include <thrust/iterator/discard_iterator.h>
+#include <thrust/sort.h>
+#include <thrust/unique.h>
+#include <thrust/set_operations.h>
 
 #include "cupoch/geometry/boundingvolume.h"
 #include "cupoch/geometry/densegrid.inl"

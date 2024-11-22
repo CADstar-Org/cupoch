@@ -19,6 +19,10 @@
  * IN THE SOFTWARE.
 **/
 #include <thrust/iterator/discard_iterator.h>
+#include <thrust/iterator/constant_iterator.h>
+#include <thrust/sort.h>
+#include <thrust/unique.h>
+#include <thrust/distance.h>
 
 #include <numeric>
 

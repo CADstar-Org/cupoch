@@ -23,6 +23,8 @@
 #include "cupoch/utility/console.h"
 #include "cupoch/utility/platform.h"
 
+#include <thrust/tabulate.h>
+
 using namespace cupoch;
 using namespace cupoch::geometry;
 

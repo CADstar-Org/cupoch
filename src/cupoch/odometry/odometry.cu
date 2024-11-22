@@ -264,7 +264,7 @@ void ComputeCorrespondence(const Eigen::Matrix3f intrinsic_matrix,
                                                    correspondence_map->height_),
             correspondence.begin(), func_cc);
     auto end = thrust::remove_if(correspondence.begin(), correspondence.end(),
-                                 [] __device__(const Eigen::Vector4i &pc) {
+                                 [] __device__(const Eigen::Vector4i &pc) -> bool {
                                      return (pc[2] == -1 || pc[3] == -1);
                                  });
     correspondence.resize(thrust::distance(correspondence.begin(), end));

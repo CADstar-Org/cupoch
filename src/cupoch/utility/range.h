@@ -23,7 +23,7 @@
 #include <thrust/iterator/permutation_iterator.h>
 #include <thrust/iterator/transform_iterator.h>
 
-namespace thrust {
+THRUST_NAMESPACE_BEGIN
 
 // examples:
 //   repeated_range([0, 1, 2, 3], 1) -> [0, 1, 2, 3]
@@ -187,4 +187,4 @@ protected:
     difference_type tiles;
 };
 
-}  // namespace thrust
+THRUST_NAMESPACE_END
