@@ -31,7 +31,7 @@ target_include_directories(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC 
-        Eigen3::Eigen stdgpu stdgpu cupoch_utility cupoch_geometry cupoch_camera
+        Eigen3::Eigen stdgpu::stdgpu cupoch_utility cupoch_geometry cupoch_camera
     )
 
 # Installation
