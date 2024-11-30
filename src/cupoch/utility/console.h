@@ -24,8 +24,23 @@
 
 #undef __SIZEOF_INT128__
 #include <cuda.h>
+
+#ifndef __CUDACC__
 #include <fmt/printf.h>
 #include <fmt/ranges.h>
+#else
+namespace fmt {
+class format_args {
+    template <class... Args>
+    format_args(Args &&...) noexcept {}
+};
+
+template<class ... Args>
+std::string format(Args &&...) {
+    return "";
+}
+}
+#endif
 
 #define DEFAULT_IO_BUFFER_SIZE 1024
 
@@ -71,6 +86,7 @@ public:
     void ResetConsoleColor();
 
     void VFatal(const char *format, fmt::format_args args) {
+        #ifndef __CUDACC__
         if (verbosity_level_ >= VerbosityLevel::Fatal) {
             ChangeConsoleColor(TextColor::Red, 1);
             fmt::print("[Cupoc FATAL] ");
@@ -78,67 +94,87 @@ public:
             ResetConsoleColor();
             exit(-1);
         }
+        #endif
     }
 
     void VError(const char *format, fmt::format_args args) {
+        #ifndef __CUDACC__
         if (verbosity_level_ >= VerbosityLevel::Error) {
             ChangeConsoleColor(TextColor::Red, 1);
             fmt::print("[Cupoc ERROR] ");
             fmt::vprint(format, args);
             ResetConsoleColor();
         }
+        #endif
     }
 
     void VWarning(const char *format, fmt::format_args args) {
+        #ifndef __CUDACC__
         if (verbosity_level_ >= VerbosityLevel::Warning) {
             ChangeConsoleColor(TextColor::Yellow, 1);
             fmt::print("[Cupoc WARNING] ");
             fmt::vprint(format, args);
             ResetConsoleColor();
         }
+        #endif
     }
 
     void VInfo(const char *format, fmt::format_args args) {
+        #ifndef __CUDACC__
         if (verbosity_level_ >= VerbosityLevel::Info) {
             fmt::print("[Cupoc INFO] ");
             fmt::vprint(format, args);
         }
+        #endif
     }
 
     void VDebug(const char *format, fmt::format_args args) {
+        #ifndef __CUDACC__
         if (verbosity_level_ >= VerbosityLevel::Debug) {
             fmt::print("[Cupoc DEBUG] ");
             fmt::vprint(format, args);
         }
+        #endif
     }
 
     template <typename... Args>
     void Fatal(const char *format, const Args &... args) {
+        #ifndef __CUDACC__
         VFatal(format, fmt::make_format_args(args...));
+        #endif
     }
 
     template <typename... Args>
     void Error(const char *format, const Args &... args) {
+        #ifndef __CUDACC__
         VError(format, fmt::make_format_args(args...));
+        #endif
     }
 
     template <typename... Args>
     void Warning(const char *format, const Args &... args) {
+        #ifndef __CUDACC__
         VWarning(format, fmt::make_format_args(args...));
+        #endif
     }
 
     template <typename... Args>
     void Info(const char *format, const Args &... args) {
+        #ifndef __CUDACC__
         VInfo(format, fmt::make_format_args(args...));
+        #endif
     }
 
     template <typename... Args>
     void Debug(const char *format, const Args &... args) {
+        #ifndef __CUDACC__
         VDebug(format, fmt::make_format_args(args...));
+        #endif
     }
 
     template <typename... Args>
     void Fatalf(const char *format, const Args &... args) {
+        #ifndef __CUDACC__
         if (verbosity_level_ >= VerbosityLevel::Fatal) {
             ChangeConsoleColor(TextColor::Red, 1);
             fmt::print("[Cupoc FATAL] ");
@@ -146,42 +182,51 @@ public:
             ResetConsoleColor();
             exit(-1);
         }
+        #endif
     }
 
     template <typename... Args>
     void Errorf(const char *format, const Args &... args) {
+        #ifndef __CUDACC__
         if (verbosity_level_ >= VerbosityLevel::Error) {
             ChangeConsoleColor(TextColor::Red, 1);
             fmt::print("[Cupoc ERROR] ");
             fmt::printf(format, args...);
             ResetConsoleColor();
         }
+        #endif
     }
 
     template <typename... Args>
     void Warningf(const char *format, const Args &... args) {
+        #ifndef __CUDACC__
         if (verbosity_level_ >= VerbosityLevel::Warning) {
             ChangeConsoleColor(TextColor::Yellow, 1);
             fmt::print("[Cupoc WARNING] ");
             fmt::printf(format, args...);
             ResetConsoleColor();
         }
+        #endif
     }
 
     template <typename... Args>
     void Infof(const char *format, const Args &... args) {
+        #ifndef __CUDACC__
         if (verbosity_level_ >= VerbosityLevel::Info) {
             fmt::print("[Cupoc INFO] ");
             fmt::printf(format, args...);
         }
+        #endif
     }
 
     template <typename... Args>
     void Debugf(const char *format, const Args &... args) {
+        #ifndef __CUDACC__
         if (verbosity_level_ >= VerbosityLevel::Debug) {
             fmt::print("[Cupoc DEBUG] ");
             fmt::printf(format, args...);
         }
+        #endif
     }
 
 public:
@@ -198,27 +243,37 @@ inline VerbosityLevel GetVerbosityLevel() {
 
 template <typename... Args>
 inline void LogFatal(const char *format, const Args &... args) {
+    #ifndef __CUDACC__
     Logger::i().VFatal(format, fmt::make_format_args(args...));
+    #endif
 }
 
 template <typename... Args>
 inline void LogError(const char *format, const Args &... args) {
+    #ifndef __CUDACC__
     Logger::i().VError(format, fmt::make_format_args(args...));
+    #endif
 }
 
 template <typename... Args>
 inline void LogWarning(const char *format, const Args &... args) {
+    #ifndef __CUDACC__
     Logger::i().VWarning(format, fmt::make_format_args(args...));
+    #endif
 }
 
 template <typename... Args>
 inline void LogInfo(const char *format, const Args &... args) {
+    #ifndef __CUDACC__
     Logger::i().VInfo(format, fmt::make_format_args(args...));
+    #endif
 }
 
 template <typename... Args>
 inline void LogDebug(const char *format, const Args &... args) {
+    #ifndef __CUDACC__
     Logger::i().VDebug(format, fmt::make_format_args(args...));
+    #endif
 }
 
 template <typename... Args>
@@ -266,6 +321,7 @@ public:
     }
 
     ConsoleProgressBar &operator++() {
+        #ifndef __CUDACC__
         current_count_++;
         if (!active_) {
             return *this;
@@ -285,7 +341,8 @@ public:
                            percent);
                 fflush(stdout);
             }
-        }
+        } 
+        #endif
         return *this;
     }
 
